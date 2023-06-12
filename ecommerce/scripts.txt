@@ -1,0 +1,60 @@
+insert into categoria (descricao) values
+('Móveis'),('Ferramentas'),('Jardinagem'),('Eletrônicos'),('Beleza'),('Moda'),('Esportes'),('Automotivo'),('Jogos'),('Saúde');
+select * from categoria;
+
+insert into produto (nome, qt_estoque, valor, categoria) values
+('Mesa',10,1000.00,1),('Martelo',10,100.00,2),('Sofá',10,2000.00,1),('Furadeira',10,200.00,2),('Bicicleta',10,1500.00,7),('Skate',10,200.00,7);
+select * from produto;
+
+insert into cidade (nome,uf) values
+('Gravatal','SC'),('Tubarão','SC'),('São Paulo','SP'),('Rio de Janeiro','RJ'),('Niterói','RJ');
+
+insert into endereco (rua, bairro, cidade) values ('Rua 1','Bairro 1',1),('Rua 12','Bairro 1',1), ('Rua 2','Bairro 2',2),('Rua 3','Bairro 3',3);
+select * from endereco;
+
+insert into cliente (nome, sexo, data_nascimento, endereco) values 
+('Matheus','M','2004-07-19',1),('Maria','F','2015-02-11',2);
+select * from cliente;
+
+insert into venda(data_venda, cliente) values ('2023-06-12',1), ('2022-08-15',1), ('2023-05-15',2); 
+select * from venda;
+
+insert into venda_produto (qt_produto, venda, produto) values (2, 1, 1), (2,1,2), (2, 2, 1), (2,3,2);
+select * from venda_produto;
+
+--8. Listar cliente por cidade(Gravatal)
+select cliente.nome, cidade.nome from cliente 
+inner join endereco on endereco.cod_end = cliente.endereco 
+inner join cidade on cidade.cod_cidade = endereco.cidade and cidade.nome = 'Gravatal';
+
+--9. Listar vendas por cliente(Matheus)
+select venda.data_venda, vp.qt_produto, produto.nome, cliente.nome from venda
+inner join cliente on cliente.cod_cliente = venda.cliente and cliente.nome = 'Matheus'
+inner join venda_produto vp on vp.venda = venda.cod_venda
+inner join produto on produto.cod_prod = vp.produto;
+
+--10. Listar todos os produtos e categorias(mostrar todas as categorias)
+select produto.nome, c.descricao from produto
+right join categoria c on c.cod_cat = produto.categoria order by c.descricao;
+
+--11 - 01. Quais produtos foram vendidos em um determinado ano(2023) para um cliente(Matheus)
+select cliente.nome, produto.nome from cliente
+inner join venda on venda.cliente = cliente.cod_cliente and (select extract (year from venda.data_venda) = '2023')
+inner join venda_produto vp on vp.venda = venda.cod_venda 
+inner join produto on produto.cod_prod = vp.produto
+where cliente.nome = 'Matheus';
+
+--11 -02. Listar quantos produtos foram vendidos em uma determinada cidade(Gravatal)
+select count(produto.*) as qt_gravatal_vendida from produto 
+inner join venda_produto vp on vp.produto = produto.cod_prod
+inner join venda on venda.cod_venda = vp.venda 
+inner join cliente on cliente.cod_cliente = venda.cliente 
+inner join endereco on endereco.cod_end = cliente.endereco 
+inner join cidade on cidade.cod_cidade = endereco.cidade and cidade.nome = 'Gravatal';
+
+--11 -03. Listar todas as categorias de produto e produtos que um cliente comprou(Matheus)
+select categoria.descricao, produto.nome from categoria
+inner join produto on produto.categoria = categoria.cod_cat 
+inner join venda_produto vp on vp.produto = produto.cod_prod
+inner join venda on venda.cod_venda = vp.venda
+inner join cliente on cliente.cod_cliente = venda.cliente and cliente.nome = 'Matheus';
