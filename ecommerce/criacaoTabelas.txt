@@ -1,0 +1,59 @@
+create table categoria(
+cod_cat serial primary key,
+descricao varchar
+);
+
+create table produto(
+cod_prod serial primary key,
+nome varchar not null,
+qt_estoque int,
+valor decimal not null,
+categoria int,
+foreign key (categoria) references categoria(cod_cat)
+);
+
+create table cidade(
+cod_cidade serial primary key,
+nome varchar not null,
+uf varchar(2) not null
+);
+
+create table endereco(
+cod_end serial primary key,
+rua varchar,
+bairro varchar,
+cidade int,
+foreign key (cidade) references cidade(cod_cidade)
+);
+
+create table cliente(
+cod_cliente serial primary key,
+nome varchar not null,
+sexo varchar(1),
+data_nascimento date,
+endereco int,
+foreign key (endereco) references endereco(cod_end) 
+);
+
+create table telefone(
+cod_tel serial primary key,
+numero varchar not null,
+clietnte int not null,
+foreign key (clietnte) references cliente(cod_cliente)
+);
+
+create table venda(
+cod_venda serial primary key,
+data_venda date,
+cliente int,
+foreign key (cliente) references cliente(cod_cliente)
+);
+
+create table venda_produto(
+cod_vend_prod serial primary key,
+qt_produto int,
+venda int,
+produto int,
+foreign key (venda) references venda(cod_venda),
+foreign key (produto) references produto(cod_prod)
+);
